@@ -18,7 +18,6 @@ const BoxList = ( { box } ) => {
             </div>   
         );
     });
-    console.log( boxList )
     return boxList
 }
 

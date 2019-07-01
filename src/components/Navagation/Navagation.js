@@ -1,7 +1,6 @@
 import React from 'react';
 
-const Navagation = ({route, onRouteChange}) => {
-    console.log( route === "signin" || route === "register" , route )
+const Navagation = ({route, onRouteChange, zeroUserState}) => {
     return(
         <div >
             {route === "signin" || route === "register"
@@ -9,7 +8,7 @@ const Navagation = ({route, onRouteChange}) => {
             <div style = {{display:'flex', justifyContent:"flex-end"}}>
                 <p 
                     className='f3 link dim black underline pa3 pointer'
-                    onClick = {() => onRouteChange("signin")}
+                    onClick = {() => {onRouteChange("signin")}}
                 >
                     Sign In
                 </p>
@@ -24,7 +23,10 @@ const Navagation = ({route, onRouteChange}) => {
             <div style = {{display:'flex', justifyContent:"flex-end"}}>
                 <p 
                     className='f3 link dim black underline pa3 pointer'
-                    onClick = {() => onRouteChange("signin")}
+                    onClick = {() => {
+                        zeroUserState()
+                        onRouteChange("signin")
+                    }}
                 >
                     Sign Out
                 </p>

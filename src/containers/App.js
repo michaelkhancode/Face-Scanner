@@ -8,11 +8,6 @@ import Register from '../components/Register/Register';
 import ImageDisplay from '../components/ImageDisplay/ImageDisplay';
 import Particles from 'react-particles-js';
 import './App.css';
-import Clarifai from  'clarifai';
-
-const app = new Clarifai.App({
-  apiKey: '22a0a8fa2edd4094b48c3055c1f3b86a'
- });
 
 const particlesParams = {
   particles: {
@@ -34,9 +29,29 @@ class App extends React.Component {
         input: "",
         imageURL: "",
         box: [],
-        route: "signin"
+        route: "signin",
+        user: {
+          id:"",
+          name:"",
+          email: "",
+          password: "",
+          enries:"",
+          joined: ""
+        }
       }
   };
+
+  updateUserState = (user) => {
+    const { id, name, email, password, entries, joined } = user;
+    const updatedUser = { id, name, email, password, entries, joined }
+    this.setState({user:updatedUser})
+  }
+
+  zeroUserState = () => {
+    const zeroedUser = { id:"", name:"", email:"", password:"", entries:"", joined:"" };
+    this.updateUserState(zeroedUser);
+    this.setState({imageURL:""})
+  }
 
   onInputChange = (event) => {
     this.setState( {input:event.target.value} )
@@ -65,8 +80,31 @@ class App extends React.Component {
 
   onButtonSubmit = (event) => {
     this.setState( {imageURL:this.state.input} );
-    app.models.predict("a403429f2ddf4b49b307e318f00e528b", this.state.input)
-    .then( response => this.displayFaceBox(this.calculateFaceCoordinates(response)) ) 
+    fetch ("http://localhost:3000/imageface",{
+        method:'post',
+        headers:{'Content-Type': 'application/json'},
+        body: JSON.stringify({
+          input:this.state.input
+        })
+      })
+    .then(response => response.json())
+    .then( response => {
+      if (response){
+        fetch ("http://localhost:3000/image",{
+            method:'put',
+            headers:{'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                id:this.state.user.id
+            })
+        })
+        .then(data => data.json())
+        .then(user => {
+          console.log(user)
+          this.displayFaceBox(this.calculateFaceCoordinates(response));  
+          this.updateUserState(user);
+        })
+      }
+    }) 
     .catch( er => console.log(er) )
   };
 
@@ -75,22 +113,27 @@ class App extends React.Component {
   };
   
   render() {
-    console.log(this.state.route)
     return(
       <div className="App">
         <Particles params={particlesParams} className='particles' />
-        <Navagation route={this.state.route} onRouteChange={this.onRouteChange} />
+        <Navagation zeroUserState={this.zeroUserState} route={this.state.route} onRouteChange={this.onRouteChange} />
         {this.state.route === "signin" 
         ? 
-        <Signin onRouteChange={this.onRouteChange} />
+        <Signin 
+          onRouteChange={this.onRouteChange} 
+          updateUserState = {this.updateUserState}
+        />
         :
         this.state.route === "register"
         ?
-        <Register onRouteChange={this.onRouteChange}/>
+        <Register 
+          onRouteChange={this.onRouteChange}
+          updateUserState = {this.updateUserState}
+        />
         :
         <div>
           <Logo  />
-          <Rank />   
+          <Rank user = { this.state.user }  />   
           <ImageLinkForm
           imageURL = { this.state.imageURL } 
           onInputChange={this.onInputChange} 
