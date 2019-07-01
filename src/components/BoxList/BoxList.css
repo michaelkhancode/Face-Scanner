@@ -5,9 +5,4 @@
     flex-wrap: wrap;
     justify-content: center;
     cursor: pointer;
-} 
-
-.center {
-    display: flex;
-    justify-content: center;
-} 
+}

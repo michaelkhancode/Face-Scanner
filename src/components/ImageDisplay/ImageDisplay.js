@@ -1,12 +1,13 @@
 import React from 'react';
 import './ImageDisplay.css';
+import BoxList from '../BoxList/BoxList';
 
 const ImageDisplay = ({ imageURL, box }) => {
     return (
         <div className='center'>
             <div className='absolute mt2'>
                 <img id='userImage' width='500px' height="auto" src= { imageURL } />
-                <div className='bounding-box' style={{top:box.toprow, right:box.rightcol, bottom:box.bottomrow, left:box.leftcol}}></div>
+                <BoxList className='bounding-box' box={box} />
             </div>
         </div>
     );
